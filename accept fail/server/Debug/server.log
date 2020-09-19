@@ -1,3 +1,4 @@
 ﻿  server.cpp
 C:\Users\dongh\Desktop\accept-fail\accept fail\server\wsa_server.h(43,2): warning C4996: 'WSAAsyncSelect': Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  LINK : C:\Users\dongh\Desktop\accept-fail\accept fail\Debug\server.exe을(를) 찾을 수 없거나 마지막 증분 링크에 의해 빌드되지 않았습니다. 전체 링크를 수행하고 있습니다.
   server.vcxproj -> C:\Users\dongh\Desktop\accept-fail\accept fail\Debug\server.exe
