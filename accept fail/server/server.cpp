@@ -62,9 +62,9 @@ void doClose(SOCKET client_socket, bool flag)
 
 	closesocket(client_socket);
 
-	clients.erase(it);
-
 	auto& value = it->second;
+
+	clients.erase(it);
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
