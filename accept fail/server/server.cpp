@@ -12,6 +12,61 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
+#include <map>
+
+std::map<SOCKET, int> clients;
+
+void doAccept()
+{
+	SOCKADDR_IN client_addr;
+	int addrlen = sizeof(client_addr);
+	SOCKET client_socket = accept(accept_socket, (SOCKADDR*)&client_addr, &addrlen);
+	// const char* client_ip = inet_ntoa(client_addr.sin_addr);
+
+	if (client_socket == INVALID_SOCKET)
+		return;
+
+	WSAAsyncSelect(client_socket, hWnd, WM_SOCKET, FD_READ | FD_CLOSE);
+
+	clients[client_socket] = 0;
+}
+
+void doRead(SOCKET client_socket)
+{
+	auto it = clients.find(client_socket);
+
+	if (it == clients.end())
+	{
+		return;
+	}
+
+	// recv(client_socket, buf, len, 0);
+
+	auto& value = it->second;
+}
+
+void doClose(SOCKET client_socket, bool flag)
+{
+	auto it = clients.find(client_socket);
+
+	if (it == clients.end())
+	{
+		return;
+	}
+
+	if (flag)
+	{
+		LINGER linger = { 1, 0 };
+		setsockopt(client_socket, SOL_SOCKET, SO_LINGER, (const char*)&linger, sizeof(linger));
+	}
+
+	closesocket(client_socket);
+
+	clients.erase(client_socket);
+
+	auto& value = it->second;
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
@@ -45,6 +100,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			switch (WSAGETSELECTEVENT(msg.lParam))
 			{
 			case FD_ACCEPT:
+				doAccept();
+				break;
+			case FD_READ:
+				doRead((SOCKET)msg.wParam);
+				break;
+			case FD_CLOSE:
+				doClose((SOCKET)msg.wParam, false);
 				break;
 			}
 			break;
